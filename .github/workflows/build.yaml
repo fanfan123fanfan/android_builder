@@ -8,30 +8,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v4  # 升级至长期支持版（原v2已弃用）
-
+        uses: actions/checkout@v4
       - name: Set up JDK
-        uses: actions/setup-java@v3  # 升级至v3修复安全漏洞（原v1已过时）
+        uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'  # 明确指定JDK发行版（可选值：temurin/zulu等）
-          java-version: '8'
-
+          java-version: 1.8
       - id: get-project
         name: Get project name
-        run: echo "PROJECT=$$(cat project-to-build)" >> $$GITHUB_OUTPUT  # 替换旧式set-output命令
-
+        run: echo "::set-output name=PROJECT::$(cat project-to-build)"
       - name: Clone project
-        run: git clone --depth=1 $${{ steps.get-project.outputs.PROJECT }} project
-
+        run: git clone --depth=1 ${{ steps.get-project.outputs.PROJECT }} project
       - name: Build the app
         working-directory: ./project
         run: |
           if [ ! -f "gradlew" ]; then gradle wrapper; fi
           chmod +x gradlew
           ./gradlew assembleDebug --stacktrace
-
       - name: Upload APK
-        uses: actions/upload-artifact@v4  # 关键修复：升级至v4版本
+        uses: actions/upload-artifact@v4
         with:
           name: my-build-apk
-          path: project/**/*.apk  # 限定路径到项目目录（原路径可能匹配到缓存文件）
+          path: ./**/*.apk
