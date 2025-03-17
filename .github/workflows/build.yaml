@@ -16,17 +16,11 @@ jobs:
           distribution: 'temurin'
           java-version: '8'
 
-      - id: get-project
-        name: Get project name
-        run: |
-          echo "PROJECT=$$(cat project-to-build | tr -d '\n')" >> $$GITHUB_OUTPUT
-          echo "Cloning URL: $$(cat project-to-build)"
-
-      - name: Clone project
-        run: git clone --depth=1 "$${{ steps.get-project.outputs.PROJECT }}" project
+      - name: Clone TVBoxOS repository
+        run: git clone --depth=1 https://github.com/fanfan123fanfan/TVBoxOS.git
 
       - name: Build the app
-        working-directory: ./project
+        working-directory: ./TVBoxOS  # 根据实际仓库目录结构调整
         run: |
           if [ ! -f "gradlew" ]; then gradle wrapper; fi
           chmod +x gradlew
@@ -35,5 +29,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: my-build-apk
-          path: project/app/build/outputs/apk/debug/*.apk
+          name: TVBoxOS-APK
+          path: TVBoxOS/app/build/outputs/apk/debug/*.apk  # 根据实际 APK 路径调整
