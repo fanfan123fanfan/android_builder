@@ -19,7 +19,7 @@ jobs:
       - id: get-project
         name: Get project name
         run: |
-          echo "PROJECT=$$(cat project-to-build)" >> $$GITHUB_OUTPUT
+          echo "PROJECT=$$(cat project-to-build | tr -d '\n')" >> $$GITHUB_OUTPUT
           echo "Cloning URL: $$(cat project-to-build)"
 
       - name: Clone project
