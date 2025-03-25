@@ -1,9 +1,11 @@
 name: android_build
 on:
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -15,13 +17,27 @@ jobs:
           java-version: '17'
 
       - name: Clone TVBoxOS repository
-        run: git clone --depth=1 https://github.com/fanfan123fanfan/TVBoxOS.git
+        run: |
+          # 强制覆盖克隆以防残留文件
+          git clone --depth=1 https://github.com/fanfan123fanfan/TVBoxOS.git || (rm -rf TVBoxOS && git clone --depth=1 https://github.com/fanfan123fanfan/TVBoxOS.git)
+
+      - name: Gradle cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('TVBoxOS/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Build the app
-        working-directory: ./TVBoxOS
+        working-directory: TVBoxOS  # 确保所有操作在子仓库目录执行
         run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace
+          # 强制修复权限问题
+          chmod -R +x gradlew
+          # 清理旧构建 + 完整堆栈跟踪
+          ./gradlew clean assembleDebug --stacktrace --scan
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
