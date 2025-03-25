@@ -1,6 +1,5 @@
 # GitHub Actions 工作流配置：构建 Android 应用
 
-```yaml
 name: android_build
 on:
   workflow_dispatch:
@@ -42,7 +41,7 @@ jobs:
           # 清理旧构建并启用完整堆栈跟踪进行调试
           ./gradlew clean assembleDebug --stacktrace
           # 如果需要启用构建扫描，请确保已同意服务条款，并在仓库的 gradle.properties 中配置相关属性
-          # ./gradlew clean assembleDebug --stacktrace --scan
+          ./gradlew clean assembleDebug --stacktrace --scan
 
       - name: 上传 APK
         uses: actions/upload-artifact@v4
